@@ -37,7 +37,9 @@ npm run preview  # preview the production build
 
 ## Deployment
 
-The repo is connected to Vercel: every push to `main` triggers a production deploy (framework preset: Vite, output `dist`).
+Every push to `main` runs `.github/workflows/deploy.yml`, which type-checks and builds the site, then deploys it to Vercel with the Vercel CLI (`vercel deploy --prod`). The only configuration is the `VERCEL_TOKEN` repository secret (Vercel account token). The production URL is printed in the workflow's job summary.
+
+To deploy manually from your machine instead: `npx vercel deploy --prod`.
 
 ## Project structure
 
