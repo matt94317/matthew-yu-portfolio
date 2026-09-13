@@ -13,6 +13,7 @@ import { Projects } from './components/Projects'
 import { Experience } from './components/Experience'
 import { Contact } from './components/Contact'
 import { usePrefersReducedMotion } from './hooks/useMediaQuery'
+import { ToastProvider } from './components/ui/Toast'
 
 export default function App() {
   const reduced = usePrefersReducedMotion()
@@ -28,7 +29,7 @@ export default function App() {
   }, [reduced])
 
   return (
-    <>
+    <ToastProvider>
       <AnimatePresence>{loading && <Loader />}</AnimatePresence>
       <CursorGlow />
       <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[60] focus:rounded-lg focus:bg-accent focus:px-4 focus:py-2 focus:text-ink">
@@ -46,6 +47,6 @@ export default function App() {
       </main>
       <Footer />
       <BackToTop />
-    </>
+    </ToastProvider>
   )
 }

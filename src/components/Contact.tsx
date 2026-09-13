@@ -1,29 +1,18 @@
 import { motion } from 'framer-motion'
-import { ArrowUpRight, Check, Copy, Download, Mail, MapPin } from 'lucide-react'
+import { ArrowUpRight, Copy, Download, Mail, MapPin } from 'lucide-react'
 import { FaGithub, FaLinkedinIn } from 'react-icons/fa6'
-import { useState } from 'react'
 import { profile } from '../data/profile'
 import { Reveal, revealContainer, revealItem } from './ui/Reveal'
 import { Magnetic } from './ui/Magnetic'
 import { ParticleField } from './ui/ParticleField'
+import { useToast } from './ui/Toast'
 
 export function Contact() {
-  const [copied, setCopied] = useState(false)
-
-  const copyEmail = async () => {
-    try {
-      await navigator.clipboard.writeText(profile.email)
-      setCopied(true)
-      setTimeout(() => setCopied(false), 2000)
-    } catch {
-      window.location.href = `mailto:${profile.email}`
-    }
-  }
+  const { copyEmail } = useToast()
 
   const links = [
     { label: 'GitHub', value: 'github.com/matt94317', href: profile.github, Icon: FaGithub },
     { label: 'LinkedIn', value: 'matthew-yu-6653b4200', href: profile.linkedin, Icon: FaLinkedinIn },
-    { label: 'Email', value: profile.email, href: `mailto:${profile.email}`, Icon: Mail },
   ]
 
   return (
@@ -45,21 +34,38 @@ export function Contact() {
                 <MapPin className="h-3.5 w-3.5" aria-hidden="true" /> {profile.location} · GMT+10
               </p>
 
-              <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
+              {/* The address itself, always visible and selectable */}
+              <a href={`mailto:${profile.email}`} className="mt-7 inline-block font-display text-xl font-semibold tracking-tight text-text transition-colors hover:text-accent sm:text-2xl">
+                {profile.email}
+              </a>
+
+              <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
                 <Magnetic>
-                  <a href={`mailto:${profile.email}`} className="shine inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-accent to-accent-2 px-6 py-3.5 text-sm font-semibold text-ink shadow-glow transition-transform hover:scale-[1.03]">
+                  <a
+                    href={`mailto:${profile.email}?subject=${encodeURIComponent('Hello Matthew')}`}
+                    onClick={() => void copyEmail(`Email copied — ${profile.email}. If your mail app didn't open, just paste it.`)}
+                    className="shine inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-accent to-accent-2 px-6 py-3.5 text-sm font-semibold text-ink shadow-glow transition-transform hover:scale-[1.03]"
+                  >
                     <Mail className="h-4 w-4" />
                     Say hello
                   </a>
                 </Magnetic>
                 <Magnetic>
-                  <button type="button" onClick={copyEmail} className="inline-flex items-center gap-2 rounded-xl border border-line-strong bg-surface/60 px-5 py-3.5 text-sm font-semibold text-text backdrop-blur transition-colors hover:border-accent/60 hover:text-accent" aria-live="polite">
-                    {copied ? <Check className="h-4 w-4 text-success" /> : <Copy className="h-4 w-4" />}
-                    {copied ? 'Copied!' : 'Copy email'}
+                  <button
+                    type="button"
+                    onClick={() => void copyEmail()}
+                    className="inline-flex items-center gap-2 rounded-xl border border-line-strong bg-surface/60 px-5 py-3.5 text-sm font-semibold text-text backdrop-blur transition-colors hover:border-accent/60 hover:text-accent"
+                  >
+                    <Copy className="h-4 w-4" />
+                    Copy email
                   </button>
                 </Magnetic>
                 <Magnetic>
-                  <a href={profile.cvUrl} download className="inline-flex items-center gap-2 rounded-xl border border-line-strong bg-surface/60 px-5 py-3.5 text-sm font-semibold text-text backdrop-blur transition-colors hover:border-accent/60 hover:text-accent">
+                  <a
+                    href={profile.cvUrl}
+                    download={profile.cvFileName}
+                    className="inline-flex items-center gap-2 rounded-xl border border-line-strong bg-surface/60 px-5 py-3.5 text-sm font-semibold text-text backdrop-blur transition-colors hover:border-accent/60 hover:text-accent"
+                  >
                     <Download className="h-4 w-4" />
                     CV (PDF)
                   </a>
@@ -72,12 +78,7 @@ export function Contact() {
         <motion.ul variants={revealContainer} initial="hidden" whileInView="show" viewport={{ once: true, margin: '-10% 0px' }} className="mt-6 grid gap-4 sm:grid-cols-3">
           {links.map(({ label, value, href, Icon }) => (
             <motion.li key={label} variants={revealItem}>
-              <a
-                href={href}
-                target={href.startsWith('http') ? '_blank' : undefined}
-                rel={href.startsWith('http') ? 'noreferrer' : undefined}
-                className="card group flex items-center gap-4 p-4 transition-all hover:-translate-y-0.5 hover:border-line-strong"
-              >
+              <a href={href} target="_blank" rel="noreferrer" className="card group flex items-center gap-4 p-4 transition-all hover:-translate-y-0.5 hover:border-line-strong">
                 <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-white/[0.05] text-text transition-colors group-hover:bg-accent group-hover:text-ink">
                   <Icon className="h-5 w-5" aria-hidden="true" />
                 </span>
@@ -89,6 +90,23 @@ export function Contact() {
               </a>
             </motion.li>
           ))}
+          <motion.li variants={revealItem}>
+            <button
+              type="button"
+              onClick={() => void copyEmail()}
+              className="card group flex w-full items-center gap-4 p-4 text-left transition-all hover:-translate-y-0.5 hover:border-line-strong"
+              aria-label={`Copy email address ${profile.email}`}
+            >
+              <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-white/[0.05] text-text transition-colors group-hover:bg-accent group-hover:text-ink">
+                <Mail className="h-5 w-5" aria-hidden="true" />
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="block font-mono text-[10px] uppercase tracking-widest text-dim">Email · click to copy</span>
+                <span className="block truncate text-sm font-medium text-text">{profile.email}</span>
+              </span>
+              <Copy className="h-4 w-4 shrink-0 text-dim transition-colors group-hover:text-accent" aria-hidden="true" />
+            </button>
+          </motion.li>
         </motion.ul>
       </div>
     </section>

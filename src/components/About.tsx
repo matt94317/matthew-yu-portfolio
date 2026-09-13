@@ -60,9 +60,9 @@ export function About() {
               className="mt-10 grid grid-cols-1 gap-3 sm:grid-cols-2"
             >
               {profile.facts.map((f) => (
-                <motion.div key={f.label} variants={revealItem} className="card flex items-baseline justify-between gap-4 px-4 py-3 transition-colors hover:border-line-strong">
-                  <dt className="shrink-0 font-mono text-[11px] uppercase tracking-widest text-dim">{f.label}</dt>
-                  <dd className="text-right text-sm font-medium text-text">{f.value}</dd>
+                <motion.div key={f.label} variants={revealItem} className="card px-4 py-3.5 transition-colors hover:border-line-strong">
+                  <dt className="font-mono text-[10px] uppercase tracking-[0.18em] text-dim">{f.label}</dt>
+                  <dd className="mt-1 text-[15px] font-medium leading-snug text-text">{f.value}</dd>
                 </motion.div>
               ))}
             </motion.dl>

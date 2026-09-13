@@ -1,5 +1,6 @@
 import { AnimatePresence, motion } from 'framer-motion'
-import { ArrowUpRight, ExternalLink, Trophy, X } from 'lucide-react'
+import { ArrowUpRight, ExternalLink, Globe, Trophy, X } from 'lucide-react'
+import { FaApple, FaGithub } from 'react-icons/fa6'
 import { useCallback, useEffect, useState } from 'react'
 import { featuredProjects, otherProjects, type Project } from '../data/projects'
 import { SectionHeading } from './ui/SectionHeading'
@@ -12,6 +13,13 @@ const accentMap = {
   pink: { ring: 'group-hover:border-accent-3/50', glow: 'rgba(244,114,182,0.35)', text: 'text-accent-3', bg: 'bg-accent-3/10' },
   emerald: { ring: 'group-hover:border-success/50', glow: 'rgba(52,211,153,0.35)', text: 'text-success', bg: 'bg-success/10' },
 } as const
+
+function LinkIcon({ kind, className }: { kind?: string; className?: string }) {
+  if (kind === 'appstore') return <FaApple className={className} aria-hidden="true" />
+  if (kind === 'github') return <FaGithub className={className} aria-hidden="true" />
+  if (kind === 'web') return <Globe className={className} aria-hidden="true" />
+  return <ExternalLink className={className} aria-hidden="true" />
+}
 
 function FeaturedCard({ project, onOpen, index }: { project: Project; onOpen: (p: Project) => void; index: number }) {
   const a = accentMap[project.accent]
@@ -66,6 +74,24 @@ function FeaturedCard({ project, onOpen, index }: { project: Project; onOpen: (p
             </span>
           </div>
         </button>
+        {project.links && project.links.length > 0 && (
+          <div className="absolute bottom-5 right-5 flex gap-2 sm:bottom-6 sm:right-6">
+            {project.links.map((l) => (
+              <a
+                key={l.href}
+                href={l.href}
+                target="_blank"
+                rel="noreferrer"
+                aria-label={`${project.title} on ${l.label}`}
+                title={l.label}
+                className="inline-flex items-center gap-1.5 rounded-lg border border-line bg-surface/80 px-2.5 py-1.5 text-xs font-medium text-muted backdrop-blur transition-colors hover:border-accent/60 hover:text-text"
+              >
+                <LinkIcon kind={l.kind} className="h-3.5 w-3.5" />
+                <span className="hidden sm:inline">{l.label}</span>
+              </a>
+            ))}
+          </div>
+        )}
       </TiltCard>
     </motion.article>
   )
@@ -173,7 +199,31 @@ function ProjectModal({ project, onClose }: { project: Project | null; onClose: 
                 </div>
               </div>
 
-              <div className="mt-8 flex flex-wrap items-center justify-between gap-4 border-t border-line pt-6">
+              {project.links && project.links.length > 0 && (
+                <div className="mt-8 flex flex-col gap-3 rounded-2xl border border-line bg-white/[0.03] p-4 sm:flex-row sm:items-center sm:justify-between">
+                  <p className="text-sm text-muted">Try it yourself</p>
+                  <div className="flex flex-wrap gap-2">
+                    {project.links.map((l, i) => (
+                      <a
+                        key={l.href}
+                        href={l.href}
+                        target="_blank"
+                        rel="noreferrer"
+                        className={`inline-flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition-colors ${
+                          i === 0 ? 'bg-text text-ink hover:bg-accent' : 'border border-line-strong text-text hover:border-accent/60 hover:text-accent'
+                        }`}
+                      >
+                        <LinkIcon kind={l.kind} className="h-4 w-4" />
+                        {l.label}
+                        <ArrowUpRight className="h-3.5 w-3.5 opacity-70" aria-hidden="true" />
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <div className="mt-6 border-t border-line pt-5">
+                <h4 className="mb-2 font-mono text-[11px] uppercase tracking-widest text-dim">Tech stack</h4>
                 <ul className="flex flex-wrap gap-1.5" aria-label="Tech stack">
                   {project.stack.map((t) => (
                     <li key={t} className="rounded-md border border-line bg-white/[0.03] px-2 py-1 font-mono text-[11px] text-muted">
@@ -181,16 +231,6 @@ function ProjectModal({ project, onClose }: { project: Project | null; onClose: 
                     </li>
                   ))}
                 </ul>
-                {project.links && project.links.length > 0 && (
-                  <div className="flex gap-2">
-                    {project.links.map((l) => (
-                      <a key={l.href} href={l.href} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 rounded-xl bg-text px-4 py-2 text-sm font-semibold text-ink transition-colors hover:bg-accent">
-                        {l.label}
-                        <ExternalLink className="h-4 w-4" />
-                      </a>
-                    ))}
-                  </div>
-                )}
               </div>
             </div>
           </motion.div>
@@ -208,7 +248,7 @@ export function Projects() {
     <section id="projects" className="relative scroll-mt-24 py-24 sm:py-32">
       <div className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[600px] bg-[radial-gradient(60%_50%_at_80%_20%,rgba(34,211,238,0.10),transparent_70%)]" aria-hidden="true" />
       <div className="container-x">
-        <SectionHeading index="03" eyebrow="Projects" title="Things I've shipped, not just started." description="Real users, real clients and one very good hackathon weekend. Click a card for the full story." />
+        <SectionHeading index="03" eyebrow="Projects" title="Things I've shipped, not just started." description="Real users, a real capstone and one very good hackathon weekend. Click a card for the full story." />
 
         <motion.div variants={revealContainer} initial="hidden" whileInView="show" viewport={{ once: true, margin: '-10% 0px' }} className="grid gap-6 md:grid-cols-2">
           {featuredProjects.map((p, i) => (

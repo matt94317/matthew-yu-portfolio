@@ -19,7 +19,7 @@ export const timeline: TimelineItem[] = [
     period: 'Feb 2025 – Dec 2026',
     start: '2025-02',
     summary:
-      'Coursework across machine learning, cloud computing, advanced algorithms, cyber security and governance, networks and security, software life-cycle management and human-centred design — capped by an industry project with a real client.',
+      'Coursework across machine learning, cloud computing, advanced algorithms, cyber security and governance, networks and security, software life-cycle management and human-centred design — capped by an industry capstone project (Vertex).',
     tags: ['Machine Learning', 'Cloud Computing', 'Cyber Security', 'Algorithms', 'Industry Project'],
   },
   {

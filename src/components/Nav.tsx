@@ -85,7 +85,7 @@ export function Nav() {
 
           <div className="flex items-center gap-2">
             <a
-              href={`mailto:${profile.email}`}
+              href="#contact"
               className="hidden rounded-xl bg-text px-4 py-2 text-sm font-semibold text-ink transition-all hover:bg-accent hover:shadow-glow md:inline-flex"
             >
               Let's talk
@@ -137,7 +137,7 @@ export function Nav() {
               ))}
               <li className="p-2 pt-3">
                 <a
-                  href={`mailto:${profile.email}`}
+                  href="#contact"
                   className="flex w-full items-center justify-center rounded-xl bg-text px-4 py-3 text-sm font-semibold text-ink"
                   onClick={() => setOpen(false)}
                 >

@@ -24,7 +24,7 @@ All copy lives in `src/data/` — no component changes needed for routine update
 | `src/data/skills.ts` | Skill categories, icons and which projects each skill was used in |
 | `src/data/experience.ts` | Work/education timeline and awards |
 
-Images live in `public/images/`, the hero video in `public/videos/`, and the downloadable CV at `public/Matthew_Yu_CV.pdf` (replace the file to update the download).
+Images live in `public/images/`, the hero video in `public/videos/`, and the downloadable CV at `public/Matthew_Yu_CV_SoftwareEngineer.pdf` (replace the file to update the download; the path is set in `src/data/profile.ts`).
 
 ## Development
 
@@ -37,9 +37,7 @@ npm run preview  # preview the production build
 
 ## Deployment
 
-Every push to `main` runs `.github/workflows/deploy.yml`, which type-checks and builds the site, then deploys it to Vercel with the Vercel CLI (`vercel deploy --prod`). The only configuration is the `VERCEL_TOKEN` repository secret (Vercel account token). The production URL is printed in the workflow's job summary.
-
-To deploy manually from your machine instead: `npx vercel deploy --prod`.
+The repo is connected to Vercel: every push to `main` triggers a production deploy (framework preset: Vite, output `dist`).
 
 ## Project structure
 

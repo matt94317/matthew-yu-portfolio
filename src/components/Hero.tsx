@@ -6,6 +6,7 @@ import { profile } from '../data/profile'
 import { ParticleField } from './ui/ParticleField'
 import { Typewriter } from './ui/Typewriter'
 import { Magnetic } from './ui/Magnetic'
+import { useToast } from './ui/Toast'
 
 const nameLetters = profile.name.split('')
 
@@ -38,6 +39,7 @@ const floatBadges = [
 
 export function Hero() {
   const reduced = useReducedMotion()
+  const { copyEmail } = useToast()
   const ref = useRef<HTMLElement>(null)
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end start'] })
   const bgY = useTransform(scrollYProgress, [0, 1], ['0%', '25%'])
@@ -141,7 +143,7 @@ export function Hero() {
               <Magnetic>
                 <a
                   href={profile.cvUrl}
-                  download
+                  download={profile.cvFileName}
                   className="inline-flex items-center gap-2 rounded-xl border border-line-strong bg-surface/50 px-5 py-3 text-sm font-semibold text-text backdrop-blur transition-colors hover:border-accent/60 hover:text-accent"
                 >
                   <Download className="h-4 w-4" />
@@ -152,13 +154,12 @@ export function Hero() {
                 {[
                   { href: profile.github, label: 'GitHub', Icon: FaGithub },
                   { href: profile.linkedin, label: 'LinkedIn', Icon: FaLinkedinIn },
-                  { href: `mailto:${profile.email}`, label: 'Email', Icon: Mail },
                 ].map(({ href, label, Icon }) => (
                   <Magnetic key={label} strength={0.25}>
                     <a
                       href={href}
-                      target={href.startsWith('http') ? '_blank' : undefined}
-                      rel={href.startsWith('http') ? 'noreferrer' : undefined}
+                      target="_blank"
+                      rel="noreferrer"
                       aria-label={label}
                       className="grid h-11 w-11 place-items-center rounded-xl text-muted transition-all hover:bg-white/[0.06] hover:text-text"
                     >
@@ -166,6 +167,17 @@ export function Hero() {
                     </a>
                   </Magnetic>
                 ))}
+                <Magnetic strength={0.25}>
+                  <button
+                    type="button"
+                    onClick={() => void copyEmail()}
+                    aria-label={`Copy email address ${profile.email}`}
+                    title="Copy email address"
+                    className="grid h-11 w-11 place-items-center rounded-xl text-muted transition-all hover:bg-white/[0.06] hover:text-text"
+                  >
+                    <Mail className="h-[18px] w-[18px]" />
+                  </button>
+                </Magnetic>
               </div>
             </motion.div>
           </div>

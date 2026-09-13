@@ -1,4 +1,4 @@
-export type ProjectLink = { label: string; href: string }
+export type ProjectLink = { label: string; href: string; kind?: 'appstore' | 'web' | 'github' }
 
 export type Project = {
   slug: string
@@ -31,18 +31,18 @@ export const projects: Project[] = [
     category: 'Security',
     stack: ['Go', 'React', 'TypeScript', 'Vite', 'PostgreSQL', 'Ollama', 'RAG', 'Terraform', 'AWS'],
     summary:
-      'A prioritisation platform for QUT Information Security that layers organisational context onto vulnerability findings, so the security team knows what to fix first.',
+      'An AI-assisted prioritisation platform, built as a QUT industry capstone, that layers organisational context onto vulnerability findings so a security team knows what to fix first.',
     problem:
       'Existing vulnerability tools rank findings without organisational context, forcing security teams to triage manually. Anything touching that data also has to handle it responsibly.',
     solution:
       'Co-developing the platform with a Go backend, React/TypeScript frontend and PostgreSQL data layer. A RAG pipeline retrieves client-specific context and a self-hosted Ollama model keeps sensitive data off third-party infrastructure, while a deterministic scoring engine constrains the LLM’s output.',
     outcome:
-      'Delivering a working, cloud-deployed prototype for a real client. I independently own the AWS deployment (EC2, S3, RDS, VPC, IAM) provisioned with Terraform, so environments stay version-controlled and reproducible.',
+      'Delivering a working, cloud-deployed prototype despite limited access to sensitive validation data. I independently own the AWS deployment (EC2, S3, RDS, VPC, IAM) provisioned with Terraform, so environments stay version-controlled and reproducible.',
     highlights: [
       'Self-hosted LLM + RAG keeps organisation-sensitive data on-prem',
       'Deterministic SSVC-style scoring engine constrains AI output',
       'Infrastructure as code: Terraform-provisioned AWS stack',
-      'Real client: QUT Information Security',
+      'QUT industry capstone project, built with a team',
     ],
     cover: '/images/cover-vertex.webp',
     coverAlt: 'Abstract illustration of a glowing network of threat nodes protected by a holographic shield',
@@ -75,7 +75,10 @@ export const projects: Project[] = [
     coverAlt: 'AnyWear app home screen on an iPhone: “Travel Light, Dress Amazing”',
     accent: 'pink',
     featured: true,
-    links: [{ label: 'Website', href: 'https://web.anywearglobal.app/' }],
+    links: [
+      { label: 'App Store', href: 'https://apps.apple.com/au/app/anywear-travel-wardrobe/id6762925692', kind: 'appstore' },
+      { label: 'Website', href: 'https://web.anywearglobal.app/', kind: 'web' },
+    ],
   },
   {
     slug: 'sightline',
