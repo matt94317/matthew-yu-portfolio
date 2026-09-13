@@ -16,7 +16,7 @@ export function Experience() {
       <div className="container-x">
         <SectionHeading index="04" eyebrow="Experience & education" title="The path from hardware to software." description="Two years engineering data-centre cooling for Azure, then a deliberate pivot into building software full-time." />
 
-        <div className="grid gap-16 lg:grid-cols-[1.4fr_0.9fr]">
+        <div className="grid items-start gap-16 lg:grid-cols-[1.4fr_0.9fr]">
           {/* Timeline */}
           <ol ref={ref} className="relative space-y-10 pl-8 sm:pl-10">
             <div className="absolute bottom-2 left-[11px] top-2 w-px bg-line sm:left-[15px]" aria-hidden="true" />
@@ -71,8 +71,8 @@ export function Experience() {
             })}
           </ol>
 
-          {/* Awards */}
-          <div className="lg:pt-2">
+          {/* Awards — sticky so the column tracks the longer timeline instead of leaving a void */}
+          <div className="lg:sticky lg:top-28 lg:pt-2">
             <Reveal>
               <h3 className="mb-5 flex items-center gap-2 font-display text-lg font-semibold text-text">
                 <Award className="h-5 w-5 text-amber-300" aria-hidden="true" />

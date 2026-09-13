@@ -1,7 +1,7 @@
 import { AnimatePresence, motion } from 'framer-motion'
-import { ArrowUpRight, ExternalLink, Globe, Trophy, X } from 'lucide-react'
+import { ArrowUpRight, ChevronLeft, ChevronRight, ExternalLink, Globe, Trophy, X } from 'lucide-react'
 import { FaApple, FaGithub } from 'react-icons/fa6'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { featuredProjects, otherProjects, type Project } from '../data/projects'
 import { SectionHeading } from './ui/SectionHeading'
 import { TiltCard } from './ui/TiltCard'
@@ -24,7 +24,7 @@ function LinkIcon({ kind, className }: { kind?: string; className?: string }) {
 function FeaturedCard({ project, onOpen, index }: { project: Project; onOpen: (p: Project) => void; index: number }) {
   const a = accentMap[project.accent]
   return (
-    <motion.article variants={revealItem} className="h-full">
+    <article className="h-full">
       <TiltCard className="group h-full" intensity={6}>
         <button
           type="button"
@@ -93,7 +93,109 @@ function FeaturedCard({ project, onOpen, index }: { project: Project; onOpen: (p
           </div>
         )}
       </TiltCard>
-    </motion.article>
+    </article>
+  )
+}
+
+/** Horizontal, snap-scrolling rail of featured project cards. */
+function ProjectRail({ projects, onOpen }: { projects: Project[]; onOpen: (p: Project) => void }) {
+  const railRef = useRef<HTMLUListElement>(null)
+  const [canPrev, setCanPrev] = useState(false)
+  const [canNext, setCanNext] = useState(true)
+  const [active, setActive] = useState(0)
+
+  const step = useCallback(() => {
+    const el = railRef.current
+    if (!el) return 0
+    const first = el.firstElementChild as HTMLElement | null
+    if (!first) return el.clientWidth
+    const gap = parseFloat(getComputedStyle(el).columnGap || '24') || 24
+    return first.getBoundingClientRect().width + gap
+  }, [])
+
+  const sync = useCallback(() => {
+    const el = railRef.current
+    if (!el) return
+    const max = el.scrollWidth - el.clientWidth
+    setCanPrev(el.scrollLeft > 8)
+    setCanNext(el.scrollLeft < max - 8)
+    const s = step()
+    setActive(s > 0 ? Math.min(projects.length - 1, Math.round(el.scrollLeft / s)) : 0)
+  }, [step, projects.length])
+
+  useEffect(() => {
+    const el = railRef.current
+    if (!el) return
+    sync()
+    el.addEventListener('scroll', sync, { passive: true })
+    window.addEventListener('resize', sync)
+    return () => {
+      el.removeEventListener('scroll', sync)
+      window.removeEventListener('resize', sync)
+    }
+  }, [sync])
+
+  const go = (dir: 1 | -1) => railRef.current?.scrollBy({ left: dir * step(), behavior: 'smooth' })
+
+  const goTo = (i: number) => railRef.current?.scrollTo({ left: i * step(), behavior: 'smooth' })
+
+  return (
+    <div className="relative">
+      {/* Controls */}
+      <div className="mb-5 flex items-center justify-between gap-4">
+        <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-dim">
+          {String(active + 1).padStart(2, '0')} / {String(projects.length).padStart(2, '0')}
+          <span className="ml-3 hidden normal-case tracking-normal sm:inline">Swipe or use the arrows</span>
+        </p>
+        <div className="flex gap-2">
+          <button
+            type="button"
+            onClick={() => go(-1)}
+            disabled={!canPrev}
+            aria-label="Previous project"
+            className="grid h-10 w-10 place-items-center rounded-full border border-line text-text transition-all hover:border-accent/60 hover:text-accent disabled:pointer-events-none disabled:opacity-30"
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </button>
+          <button
+            type="button"
+            onClick={() => go(1)}
+            disabled={!canNext}
+            aria-label="Next project"
+            className="grid h-10 w-10 place-items-center rounded-full border border-line text-text transition-all hover:border-accent/60 hover:text-accent disabled:pointer-events-none disabled:opacity-30"
+          >
+            <ChevronRight className="h-4 w-4" />
+          </button>
+        </div>
+      </div>
+
+      {/* Rail */}
+      <ul
+        ref={railRef}
+        className="scrollbar-none -mx-5 flex snap-x snap-mandatory gap-6 overflow-x-auto scroll-smooth px-5 pb-2 sm:-mx-8 sm:px-8"
+        style={{ scrollPaddingLeft: '1.25rem' }}
+      >
+        {projects.map((p, i) => (
+          <li key={p.slug} className="w-[84vw] max-w-[430px] shrink-0 snap-start sm:w-[400px] lg:w-[440px]">
+            <FeaturedCard project={p} onOpen={onOpen} index={i} />
+          </li>
+        ))}
+      </ul>
+
+      {/* Progress dots */}
+      <div className="mt-6 flex justify-center gap-2">
+        {projects.map((p, i) => (
+          <button
+            key={p.slug}
+            type="button"
+            onClick={() => goTo(i)}
+            aria-label={`Go to ${p.title}`}
+            aria-current={active === i}
+            className={`h-1.5 rounded-full transition-all duration-300 ${active === i ? 'w-8 bg-accent' : 'w-4 bg-white/15 hover:bg-white/30'}`}
+          />
+        ))}
+      </div>
+    </div>
   )
 }
 
@@ -250,11 +352,9 @@ export function Projects() {
       <div className="container-x">
         <SectionHeading index="03" eyebrow="Projects" title="Things I've shipped, not just started." description="Real users, a real capstone and one very good hackathon weekend. Click a card for the full story." />
 
-        <motion.div variants={revealContainer} initial="hidden" whileInView="show" viewport={{ once: true, margin: '-10% 0px' }} className="grid gap-6 md:grid-cols-2">
-          {featuredProjects.map((p, i) => (
-            <FeaturedCard key={p.slug} project={p} onOpen={setOpen} index={i} />
-          ))}
-        </motion.div>
+        <Reveal>
+          <ProjectRail projects={featuredProjects} onOpen={setOpen} />
+        </Reveal>
 
         <Reveal className="mt-16">
           <div className="mb-6 flex items-center gap-4">

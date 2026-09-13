@@ -34,12 +34,7 @@ export function Contact() {
                 <MapPin className="h-3.5 w-3.5" aria-hidden="true" /> {profile.location} · GMT+10
               </p>
 
-              {/* The address itself, always visible and selectable */}
-              <a href={`mailto:${profile.email}`} className="mt-7 inline-block font-display text-xl font-semibold tracking-tight text-text transition-colors hover:text-accent sm:text-2xl">
-                {profile.email}
-              </a>
-
-              <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+              <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
                 <Magnetic>
                   <a
                     href={`mailto:${profile.email}?subject=${encodeURIComponent('Hello Matthew')}`}
