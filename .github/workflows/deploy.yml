@@ -17,10 +17,10 @@ jobs:
       VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
     steps:
       - name: Check out
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: 22
           cache: npm
@@ -36,6 +36,7 @@ jobs:
 
       - name: Deploy to Vercel (production)
         run: |
+          set -o pipefail
           vercel deploy --prod --yes --token "$VERCEL_TOKEN" 2>&1 | tee deploy.log
           URL=$(grep -Eo 'https://[a-zA-Z0-9.-]+\.vercel\.app' deploy.log | tail -n 1)
           echo "Deployed: $URL"
